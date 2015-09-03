@@ -7,6 +7,14 @@ Please read the original paper
 <a href="http://ijcai.org/Past%20Proceedings/IJCAI-93-VOL2/PDF/022.pdf">here</a>.
 for more information
 
+# Tests
+
+Feel free to run the tests using `nose`.
+```
+cd tests
+nosetests test_mdlp
+```
+
 # Installation and Usage
 
 This code was built using Cython, so you have to run the makefile
