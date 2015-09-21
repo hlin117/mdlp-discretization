@@ -5,7 +5,7 @@ from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
 #from numpy.math cimport INFINITY
 
-def MDLPDiscretize(col, y, shuffle, min_depth):
+def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     """Performs the discretization process on X and y
     """
     # Shuffle array, and then reorder them
