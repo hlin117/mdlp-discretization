@@ -26,7 +26,7 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     col = col[order]
     y = y[order]
 
-    cdef stdset[int] cut_points = stdset[int]()
+    cdef stdset[SIZE_t] cut_points = stdset[SIZE_t]()
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
@@ -51,21 +51,23 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
             back = INFINITY if (end == num_samples) else get_cut(col, end)
 
             if front == back: continue  # Corner case
-            if front != -1 * INFINITY: cut_points.add(front)
-            if back != INFINITY: cut_points.add(back)
+            if front != -1 * INFINITY:
+                cut_points.insert(front)
+            if back != INFINITY:
+                cut_points.insert(back)
+
             continue
 
         left_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
         right_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
         set_level(left_level, start, k, depth+1)
         set_level(right_level, k, end, depth+1)
-
         search_intervals.push_back(left_level)
         search_intervals.push_back(right_level)
 
     output = np.array([num for num in cut_points])
-    print output
     output = np.sort(output)
+    print output
     return output
 
 cdef unwrap(LEVEL level):
