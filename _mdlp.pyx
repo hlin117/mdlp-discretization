@@ -1,12 +1,16 @@
 from __future__ import division
+from cpython.mem cimport PyMem_Malloc
+from cpython.mem cimport PyMem_Free
 import numpy as np
 cimport numpy as np
 from scipy.stats import entropy
 from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
-#from libcpp.vector cimport vector as stdvector
+from libcpp.vector cimport vector as stdvector
 from numpy.math cimport INFINITY
 import cython
+
+cdef SIZE_t LEVEL_SIZE = sizeof(SIZE_t) * 3
 
 @cython.boundscheck(False)
 def MDLPDiscretize(col, y, bint shuffle, int min_depth):
@@ -26,10 +30,13 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
-    search_intervals = list()
-    search_intervals.append((0, num_samples, 0))
+    cdef LEVEL init_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
+
+    cdef stdvector[LEVEL] search_intervals = stdvector[LEVEL]()
+
+    search_intervals.push_back((0, num_samples, 0))
     while len(search_intervals) > 0:
-        start, end, depth = search_intervals.pop()
+        start, end, depth = search_intervals.pop_back()
 
         k = find_cut(y, start, end)
 
@@ -44,8 +51,8 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
             if back != INFINITY: cut_points.add(back)
             continue
 
-        search_intervals.append((start, k, depth + 1))
-        search_intervals.append((k, end, depth + 1))
+        search_intervals.push_back((start, k, depth + 1))
+        search_intervals.push_back((k, end, depth + 1))
 
     cut_points = np.array([num for num in cut_points])
     cut_points = np.sort(cut_points)
