@@ -86,8 +86,7 @@ class MDLP(BaseEstimator, TransformerMixin):
             raise ValueError("Invalid input dimension for `X`. Input shape is"
                              "{0}".format(X.shape))
 
-        X = check_array(X, force_all_finite=True, estimator="MDLP discretizer",
-                        ensure_2d=False)
+        X = check_array(X, force_all_finite=True, ensure_2d=False)
         y = column_or_1d(y)
         y = check_array(y, ensure_2d=False, dtype=int)
         X, y = check_X_y(X, y)
