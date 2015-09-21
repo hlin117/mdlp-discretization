@@ -3,6 +3,7 @@ cimport numpy as np
 
 ctypedef np.npy_intp SIZE_t              # Type for indices and counters
 ctypedef SIZE_t* LEVEL
+ctypedef np.float64_t FLOAT
 
 cdef inline void set_level(LEVEL level, SIZE_t start,
                            SIZE_t end, SIZE_t depth):

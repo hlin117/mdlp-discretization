@@ -7,7 +7,7 @@ from scipy.stats import entropy
 from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
 from libcpp.vector cimport vector as stdvector
-from numpy.math cimport INFINITY
+from libc.math cimport INFINITY
 import cython
 
 cdef SIZE_t LEVEL_SIZE = sizeof(SIZE_t) * 3
@@ -26,7 +26,7 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     col = col[order]
     y = y[order]
 
-    cdef stdset[SIZE_t] cut_points = stdset[SIZE_t]()
+    cdef stdset[FLOAT] cut_points = stdset[FLOAT]()
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
