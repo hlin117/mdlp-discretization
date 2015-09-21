@@ -23,11 +23,11 @@ in the directory.
 $ make
 ```
 
-Afterwards, it works exactly like any other scikit-learn
-transformer.
+Afterwards, assuming that `discretization.py` and `_mdlp.so` are in the
+same directory, you can import the MDLP class.
 
 ```
->>> from sklearn.preprocessing import MDLP
+>>> from discretization import MDLP
 >>> from sklearn.datasets import load_iris
 >>> iris = load_iris()
 >>> X = iris.data
