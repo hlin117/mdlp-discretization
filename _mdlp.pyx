@@ -2,14 +2,10 @@ import numpy as np
 cimport numpy as np
 from scipy.stats import entropy
 from libc.math cimport log, pow
-from libcpp.set cimport set
+from libcpp.set cimport set as stdset
 #from numpy.math cimport INFINITY
 
-#cdef extern from "<algorithm>" namespace "std":
-#    void sort "std::sort"[Iter, Compare](Iter first, Iter last, Compare comp)
-#    void sort "std::sort"[Iter](Iter first, Iter last)
-
-def MLDPDiscretize(col, y, shuffle, min_depth):
+def MDLPDiscretize(col, y, shuffle, min_depth):
     """Performs the discretization process on X and y
     """
     # Shuffle array, and then reorder them
@@ -22,7 +18,7 @@ def MLDPDiscretize(col, y, shuffle, min_depth):
     col = col[order]
     y = y[order]
 
-    cut_points = set[int]()
+    cut_points = stdset[int]()
 
     def get_cut(ind):
         return (col[ind-1] + col[ind]) / 2
@@ -43,14 +39,14 @@ def MLDPDiscretize(col, y, shuffle, min_depth):
             back = float("inf") if (end == num_samples) else get_cut(end)
 
             if front == back: continue  # Corner case
-            if front != float("-inf"): cut_points.insert(front)
-            if back != float("inf"): cut_points.insert(back)
+            if front != float("-inf"): cut_points.add(front)
+            if back != float("inf"): cut_points.add(back)
             continue
 
         search_intervals.append((start, k, depth + 1))
         search_intervals.append((k, end, depth + 1))
 
-    cut_points = np.array(cut_points)
+    cut_points = np.array([num for num in cut_points])
     cut_points = np.sort(cut_points)
     return cut_points
 

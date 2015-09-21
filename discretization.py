@@ -101,12 +101,14 @@ class MDLP(BaseEstimator, TransformerMixin):
                 if index not in self.continuous_features_:
                     continue
                 cut_points = MDLPDiscretize(col, y, self.shuffle, self.min_depth)
-                self.cut_points_[index] = np.array(cut_points)
+                self.cut_points_[index] = cut_points
         else:
-            # TODO: Throw warning if self.continuous_features_ is not None
+            if self.continuous_features_ is not None:
+                raise ValueError("Passed in a 1-d column of continuous features, "
+                                 "but continuous_features is not None")
             self.continuous_features_ = None
             cut_points = MDLPDiscretize(X, y, self.shuffle, self.min_depth)
-            self.cut_points_ = np.array(cut_points)
+            self.cut_points_ = cut_points
 
         return self
 
@@ -149,8 +151,6 @@ class MDLP(BaseEstimator, TransformerMixin):
             raise ValueError("Index of `X` to be discretized needs to be "
                              "specified.")
         return np.searchsorted(self.cut_points_[index], col)
-
-
 
     def _assign_intervals(self, cp_indices, index):
         """Assigns the cut point indices `cp_indices` (representing
