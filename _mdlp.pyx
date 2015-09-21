@@ -26,17 +26,21 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     col = col[order]
     y = y[order]
 
-    cut_points = stdset[int]()
+    cdef stdset[int] cut_points = stdset[int]()
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
     cdef LEVEL init_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
-
     cdef stdvector[LEVEL] search_intervals = stdvector[LEVEL]()
+    set_level(init_level, 0, num_samples, 0)
 
-    search_intervals.push_back((0, num_samples, 0))
-    while len(search_intervals) > 0:
-        start, end, depth = search_intervals.pop_back()
+    search_intervals.push_back(init_level)
+    cdef LEVEL currlevel
+    while search_intervals.size() > 0:
+        currlevel = search_intervals.back()
+        search_intervals.pop_back()
+        start, end, depth = unwrap(currlevel)
+        PyMem_Free(currlevel)
 
         k = find_cut(y, start, end)
 
@@ -51,19 +55,28 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
             if back != INFINITY: cut_points.add(back)
             continue
 
-        search_intervals.push_back((start, k, depth + 1))
-        search_intervals.push_back((k, end, depth + 1))
+        left_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
+        right_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
+        set_level(left_level, start, k, depth+1)
+        set_level(right_level, k, end, depth+1)
 
-    cut_points = np.array([num for num in cut_points])
-    cut_points = np.sort(cut_points)
-    return cut_points
+        search_intervals.push_back(left_level)
+        search_intervals.push_back(right_level)
+
+    output = np.array([num for num in cut_points])
+    print output
+    output = np.sort(output)
+    return output
+
+cdef unwrap(LEVEL level):
+    return level[0], level[1], level[2]
 
 @cython.boundscheck(False)
 cdef float get_cut(np.ndarray[np.float64_t, ndim=1] col, int ind):
     return (col[ind-1] + col[ind]) / 2
 
 @cython.boundscheck(False)
-def slice_entropy(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
+def slice_entropy(np.ndarray[np.int64_t, ndim=1] y, SIZE_t start, SIZE_t end):
     """Returns the entropy of the given slice of y. Also returns the
     number of classes within the interval.
 
@@ -94,7 +107,7 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
     return gain <= 1 / N * (log(N - 1) + delta)
 
 @cython.boundscheck(False)
-cdef int find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
+cdef SIZE_t find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     """Finds the best cut between the specified interval. The cut returned is
     an index k. If k split the array into two sub arrays A and B, then
     k is the last index of A. In other words, let start == 0 and end == n.
@@ -114,7 +127,7 @@ cdef int find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     cdef:
         int length = end - start
         float prev_entropy = np.inf #INFINITY
-        int k = -1
+        SIZE_t k = 0
         int ind
         float first_half, second_half, curr_entropy
     for ind in range(start + 1, end):

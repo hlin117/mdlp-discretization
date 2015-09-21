@@ -4,6 +4,12 @@ cimport numpy as np
 ctypedef np.npy_intp SIZE_t              # Type for indices and counters
 ctypedef SIZE_t* LEVEL
 
+cdef inline void set_level(LEVEL level, SIZE_t start,
+                           SIZE_t end, SIZE_t depth):
+    level[0] = start
+    level[1] = end
+    level[2] = depth
+
 #cdef class SearchLevel:
 #    cdef int start, end, depth
 #
