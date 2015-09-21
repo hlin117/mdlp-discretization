@@ -1,9 +1,11 @@
+from __future__ import division
 import numpy as np
 cimport numpy as np
 from scipy.stats import entropy
 from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
-#from numpy.math cimport INFINITY
+#from libcpp.vector cimport vector as stdvector
+from numpy.math cimport INFINITY
 
 def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     """Performs the discretization process on X and y
@@ -20,11 +22,9 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
 
     cut_points = stdset[int]()
 
-    def get_cut(ind):
-        return (col[ind-1] + col[ind]) / 2
 
     # Now we do a depth first search to create cut_points
-    num_samples = len(col)
+    cdef int num_samples = len(col)
     search_intervals = list()
     search_intervals.append((0, num_samples, 0))
     while len(search_intervals) > 0:
@@ -35,12 +35,12 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
         # Need to see whether the "front" and "back" of the interval need
         # to be float("-inf") or float("inf")
         if (k == -1) or (depth >= min_depth and reject_split(y, start, end, k)):
-            front = float("-inf") if (start == 0) else get_cut(start)
-            back = float("inf") if (end == num_samples) else get_cut(end)
+            front = -1 * INFINITY if (start == 0) else get_cut(col, start)
+            back = INFINITY if (end == num_samples) else get_cut(col, end)
 
             if front == back: continue  # Corner case
-            if front != float("-inf"): cut_points.add(front)
-            if back != float("inf"): cut_points.add(back)
+            if front != -1 * INFINITY: cut_points.add(front)
+            if back != INFINITY: cut_points.add(back)
             continue
 
         search_intervals.append((start, k, depth + 1))
@@ -49,6 +49,9 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     cut_points = np.array([num for num in cut_points])
     cut_points = np.sort(cut_points)
     return cut_points
+
+cdef float get_cut(np.ndarray[np.float64_t, ndim=1] col, int ind):
+    return (col[ind-1] + col[ind]) / 2
 
 def slice_entropy(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     """Returns the entropy of the given slice of y. Also returns the
