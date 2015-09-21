@@ -1,0 +1,5 @@
+Cython==0.23.2
+numpy==1.9.2
+scikit-learn==0.16.1
+scipy==0.16.0
+wsgiref==0.1.2
