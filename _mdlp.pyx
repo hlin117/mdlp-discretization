@@ -6,7 +6,9 @@ from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
 #from libcpp.vector cimport vector as stdvector
 from numpy.math cimport INFINITY
+import cython
 
+@cython.boundscheck(False)
 def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     """Performs the discretization process on X and y
     """
@@ -21,7 +23,6 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     y = y[order]
 
     cut_points = stdset[int]()
-
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
@@ -50,9 +51,11 @@ def MDLPDiscretize(col, y, bint shuffle, int min_depth):
     cut_points = np.sort(cut_points)
     return cut_points
 
+@cython.boundscheck(False)
 cdef float get_cut(np.ndarray[np.float64_t, ndim=1] col, int ind):
     return (col[ind-1] + col[ind]) / 2
 
+@cython.boundscheck(False)
 def slice_entropy(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     """Returns the entropy of the given slice of y. Also returns the
     number of classes within the interval.
@@ -64,6 +67,7 @@ def slice_entropy(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     vals = np.true_divide(counts, end - start)
     return entropy(vals), np.sum(vals != 0)
 
+@cython.boundscheck(False)
 cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int k):
     """Using the minimum description length principal, determines
     whether it is appropriate to stop cutting.
@@ -82,6 +86,7 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
         float delta = log(pow(3, k) - 2) - entropy_diff
     return gain <= 1 / N * (log(N - 1) + delta)
 
+@cython.boundscheck(False)
 cdef int find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     """Finds the best cut between the specified interval. The cut returned is
     an index k. If k split the array into two sub arrays A and B, then
