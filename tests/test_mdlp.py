@@ -8,7 +8,7 @@ sys.path.insert(0, "..")
 
 from discretization import MDLP
 from _mdlp import slice_entropy
-
+import pandas as pd
 import numpy as np
 
 def test_slice_entropy():
@@ -184,6 +184,18 @@ def test_mdlp_iris():
         [ 1.,  0.,  2.,  2.],
         [ 1.,  1.,  2.,  2.],
         [ 1.,  0.,  2.,  2.]]
-
     assert_array_equal(transformed, expected,
                        err_msg="MDLP output is inconsistent with previous runs.")
+
+
+def test_cutpoints():
+    # mdlp cutpoints produced by Spark mdlp implementation by Sergio Ramírez #
+    feature_set = {'x1': [4.1, 19.9, 180.76, 2398.13], 'x2': [-2192.84, -549.56, 2.93, 14.25, 22.09, 336.18, 175492.79], 'x3': [508, 1205, 1681, 2938, 3196], 'x4': [1997, 4057, 7006, 11716, 19665, 1063223]}
+    df = pd.read_csv("test.csv")
+    for col in df.columns.values:
+        # drop nan values in column #
+        df_temp = df[[col, 'y']].astype(float).dropna(axis=0, how='any')
+        X = df_temp.as_matrix()[:, 0:1]
+        y = df_temp['y'].astype(int).as_matrix()
+        mdlp = MDLP(min_depth=3)
+        conv_X = mdlp.fit(X, y)
