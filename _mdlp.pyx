@@ -13,14 +13,9 @@ import cython
 cdef SIZE_t LEVEL_SIZE = sizeof(SIZE_t) * 3
 
 @cython.boundscheck(False)
-def MDLPDiscretize(col, y, bint shuffle, int min_depth):
+def MDLPDiscretize(col, y, int min_depth):
     """Performs the discretization process on X and y
     """
-    # Shuffle array, and then reorder them
-    if shuffle:
-        shuffled_order = np.random.permutation(len(y))
-        col = col[shuffled_order]
-        y = y[shuffled_order]
 
     order = np.argsort(col)
     col = col[order]

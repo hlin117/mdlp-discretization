@@ -7,7 +7,8 @@ from __future__ import division
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
-from sklearn.utils import check_array, check_X_y, column_or_1d
+from sklearn.utils import check_array, check_X_y, column_or_1d, check_random_state
+from sklearn.utils import check_random_state
 from _mdlp import MDLPDiscretize
 
 class MDLP(BaseEstimator, TransformerMixin):
@@ -31,9 +32,16 @@ class MDLP(BaseEstimator, TransformerMixin):
         is found to be zero before `min_depth`, the algorithm will stop.
 
     shuffle : bool (default=True)
-        Shuffles the dataset. Affects the outcome of MDLP if there are
-        multiple samples with the same continuous value, but with different
-        class labels.
+        Deprecated, and will be removed from future versions of this module.
+
+        Please see random_state. (Note that this parameter overrides the
+        random_state parameter. Thus, setting shuffle=False will override
+        the affect of random_state.)
+
+    random_state : int (default=None)
+        Seed of pseudo RNG to use when shuffling the data. Affects the
+        outcome of MDLP if there are multiple samples with the same
+        continuous value, but with different class labels.
 
     Attributes
     ----------
@@ -74,10 +82,12 @@ class MDLP(BaseEstimator, TransformerMixin):
     and `b` can be `float("inf")`.
     """
 
-    def __init__(self, continuous_features=None, min_depth=0, shuffle=True):
+    def __init__(self, continuous_features=None, min_depth=0, shuffle=True,
+                 random_state=None):
         # Parameters
         self.continous_features = continuous_features
         self.min_depth = min_depth
+        self.random_state = random_state
         self.shuffle = shuffle
 
         # Attributes
@@ -96,6 +106,7 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         y : A list or array of class labels corresponding to `X`.
         """
+
         self.dimensions_ = len(X.shape)
 
         if self.dimensions_ > 2:
@@ -107,6 +118,16 @@ class MDLP(BaseEstimator, TransformerMixin):
         y = check_array(y, ensure_2d=False, dtype=int)
         X, y = check_X_y(X, y)
 
+        if not self.shuffle:
+            import warnings
+            warnings.warn("Shuffle parameter will be removed in the future.",
+                          DeprecationWarning)
+        else:
+            state = check_random_state(self.random_state)
+            perm = state.permutation(len(y))
+            X = X[perm]
+            y = y[perm]
+
         if self.dimensions_ == 2:
             if self.continuous_features_ is None:
                 self.continuous_features_ = np.arange(X.shape[1])
@@ -116,14 +137,14 @@ class MDLP(BaseEstimator, TransformerMixin):
             for index, col in enumerate(X.T):
                 if index not in self.continuous_features_:
                     continue
-                cut_points = MDLPDiscretize(col, y, self.shuffle, self.min_depth)
+                cut_points = MDLPDiscretize(col, y, self.min_depth)
                 self.cut_points_[index] = cut_points
         else:
             if self.continuous_features_ is not None:
                 raise ValueError("Passed in a 1-d column of continuous features, "
                                  "but continuous_features is not None")
             self.continuous_features_ = None
-            cut_points = MDLPDiscretize(X, y, self.shuffle, self.min_depth)
+            cut_points = MDLPDiscretize(X, y, self.min_depth)
             self.cut_points_ = cut_points
 
         return self
