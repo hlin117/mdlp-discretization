@@ -4,8 +4,8 @@ This is an implementation of Usama Fayyad's entropy based
 expert binning method.
 
 Please read the original paper
-<a href="http://sci2s.ugr.es/keel/pdf/algorithm/congreso/fayyad1993.pdf">here</a>.
-for more information
+<a href="http://sci2s.ugr.es/keel/pdf/algorithm/congreso/fayyad1993.pdf">here</a>
+for more information.
 
 # Tests
 
