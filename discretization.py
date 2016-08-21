@@ -17,25 +17,37 @@ class MDLP(BaseEstimator, TransformerMixin):
     for each sample, this transformer attempts to discretize a
     continuous attribute by minimizing the entropy at each interval.
 
-    Attributes
+    Parameters
     ----------
-    min_depth : The minimum depth of the interval splitting. Overrides
+    continuous_features : array-like of type int (default=None)
+        A list of indices indicating which columns should be discretized.
+
+        If `X` is a 1-D array, then continuous_features should be None.
+        Otherwise, for a 2-D array, defaults to `np.arange(X.shape[1])`.
+
+    min_depth : int (default=0)
+        The minimum depth of the interval splitting. Overrides
         the MDLP stopping criterion. If the entropy at a given interval
         is found to be zero before `min_depth`, the algorithm will stop.
 
-        Defaults to 0.
+    shuffle : bool (default=True)
+        Shuffles the dataset. Affects the outcome of MDLP if there are
+        multiple samples with the same continuous value, but with different
+        class labels.
 
-    cut_points_ : A dictionary mapping indices to a numpy array. Each
+    Attributes
+    ----------
+    continuous_features_ : array-like of type int
+        Similar to continous_features. However, for 2-D arrays, this
+        attribute cannot be None.
+
+    cut_points_ : dict of type {int : np.array}
+        Dictionary mapping indices to a numpy array. Each
         numpy array is a sorted list of cut points found from
         discretization.
 
-    dimensions_ : Describes whether `X` is a 2-D or 1-D array.
-
-    continuous_features_ : A list of indices indicating which columns
-        should be discretized.
-
-        If `X` is a 1-D array, then should be None. Otherwise, for a
-        2-D array, defaults to `range(X.shape[1])`.
+    dimensions_ : int
+        Number of dimensions to input `X`. Either 1 or 2.
 
     Examples
     --------
@@ -63,9 +75,13 @@ class MDLP(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, continuous_features=None, min_depth=0, shuffle=True):
-        self.continuous_features_ = continuous_features
+        # Parameters
+        self.continous_features = continuous_features
         self.min_depth = min_depth
         self.shuffle = shuffle
+
+        # Attributes
+        self.continuous_features_ = continuous_features
         self.cut_points_ = None
         self.dimensions_ = None
 
@@ -93,7 +109,7 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         if self.dimensions_ == 2:
             if self.continuous_features_ is None:
-                self.continuous_features_ = range(X.shape[1])
+                self.continuous_features_ = np.arange(X.shape[1])
 
             self.cut_points_ = dict()
 
