@@ -9,20 +9,19 @@ for more information
 
 # Tests
 
-Feel free to run the tests using `nose`. (Make sure you have `nose` installed
-first.)
+To run the unit tests, make sure you have `nose` installed. Afterwards,
 
 ```
-cd tests
-nosetests test_mdlp
+$ make test
 ```
 
-Or run `nosetests` right from the root folder of the project.
+should do the trick.
 
 # Installation and Usage
 
 This code was built using Cython, so you have to run the makefile
 in the directory.
+
 ```
 $ make
 ```
