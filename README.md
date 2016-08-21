@@ -9,11 +9,15 @@ for more information
 
 # Tests
 
-Feel free to run the tests using `nose`.
+Feel free to run the tests using `nose`. (Make sure you have `nose` installed
+first.)
+
 ```
 cd tests
 nosetests test_mdlp
 ```
+
+Or run `nosetests` right from the root folder of the project.
 
 # Installation and Usage
 
@@ -35,3 +39,5 @@ same directory, you can import the MDLP class.
 >>> mdlp = MDLP()
 >>> conv_X = mdlp.fit_transform(X, y)
 ```
+
+I recommend creating a virtual environment for this project.
