@@ -104,9 +104,10 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
     return gain <= 1 / N * (log(N - 1) + delta)
 
 @cython.boundscheck(False)
-cdef SIZE_t find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
-    """Finds the best cut between the specified interval. The cut returned is
-    an index k. If k split the array into two sub arrays A and B, then
+def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
+    """Finds the best cut between the specified interval.
+
+    If k split the array into two sub arrays A and B, then
     k is the last index of A. In other words, let start == 0 and end == n.
     We might have the array
 
@@ -116,6 +117,24 @@ cdef SIZE_t find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     is simply of length 1.)
 
     If k = -1, then no good cut point was found.
+
+    Parameters
+    ----------
+    y : 1-d numpy array
+        class labels
+
+    start : int
+        From where we start probing `y` for the best cut.
+
+    end : int
+        End of where we start probing `y` for the best cut. Index
+        is exclusive.
+
+    Returns
+    -------
+    k : int
+        Integer index of the best cut.
+
     """
 
     # Want to probe for the best partition _entropy in a "smart" way
@@ -124,7 +143,7 @@ cdef SIZE_t find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     cdef:
         int length = end - start
         float prev_entropy = np.inf #INFINITY
-        SIZE_t k = 0
+        SIZE_t k = -1
         int ind
         float first_half, second_half, curr_entropy
     for ind in range(start + 1, end):
@@ -145,4 +164,3 @@ cdef SIZE_t find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
             k = ind
 
     return k  # NOTE: k == -1 if there is no good cut
-

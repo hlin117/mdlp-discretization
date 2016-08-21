@@ -7,9 +7,10 @@ import sys
 sys.path.insert(0, "..")
 
 from discretization import MDLP
-from _mdlp import slice_entropy
+from _mdlp import slice_entropy, find_cut
 
 import numpy as np
+
 
 def test_slice_entropy():
 
@@ -24,6 +25,15 @@ def test_slice_entropy():
                         err_msg="Entropy was not calculated correctly.")
     assert_equal(k2, 3, "Incorrect number of classes found.")
 
+def test_find_cut():
+    y = np.array([0, 0, 0, 0, 1, 0, 1, 1])
+    k = find_cut(y, 0, len(y))
+    assert_equal(4, k)
+
+def test_find_cut_no_cut():
+    y = np.array([0, 0, 0, 0])
+    k = find_cut(y, 0, len(y))
+    assert_equal(-1, k)
 
 def test_mdlp_iris():
     from sklearn.datasets import load_iris
