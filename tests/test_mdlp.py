@@ -311,7 +311,7 @@ def test_cutpoints():
         df_temp = df[[col, 'y']].astype(float).dropna(axis=0, how='any')
         X = df_temp.as_matrix()[:, 0:1]
         y = df_temp['y'].astype(int).as_matrix()
-        mdlp = MDLP(min_depth=3)
+        mdlp = MDLP(min_depth=3, shuffle=False)
         conv_X = mdlp.fit(X, y)
         # do IV calculation and compare #
         # print(create_IV_tables(df[[col, 'y']], conv_X.cut_points_[0].tolist())[1])
