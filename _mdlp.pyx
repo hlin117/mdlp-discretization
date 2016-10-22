@@ -93,14 +93,14 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
     cdef float N = <float> (end - start)
     entropy1, k1 = slice_entropy(y, start, k)
     entropy2, k2 = slice_entropy(y, k, end)
-    whole_entropy, k = slice_entropy(y, start, end)
+    whole_entropy, k0 = slice_entropy(y, start, end)
 
     # Calculate the final values
     cdef:
         float part1 = 1 / N * ((start - k) * entropy1 + (end - k) * entropy2)
         float gain = whole_entropy - part1
-        float entropy_diff = k * whole_entropy - k1 * entropy1 - k2 * entropy2
-        float delta = log(pow(3, k) - 2) - entropy_diff
+        float entropy_diff = k0 * whole_entropy - k1 * entropy1 - k2 * entropy2
+        float delta = log(pow(3, k0) - 2) - entropy_diff
     return gain <= 1 / N * (log(N - 1) + delta)
 
 @cython.boundscheck(False)
