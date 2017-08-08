@@ -1,0 +1,3 @@
+language: python
+
+script: bash build_tools/travis/test_script.sh
