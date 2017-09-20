@@ -96,7 +96,7 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
 
     # Calculate the final values
     cdef:
-        float part1 = 1 / N * ((start - k) * entropy1 + (end - k) * entropy2)
+        float part1 = 1 / N * ((k - start) * entropy1 + (end - k) * entropy2)
         float gain = whole_entropy - part1
         float entropy_diff = k0 * whole_entropy - k1 * entropy1 - k2 * entropy2
         float delta = log(pow(3, k0) - 2) - entropy_diff
