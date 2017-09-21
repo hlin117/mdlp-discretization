@@ -9,13 +9,13 @@ for more information.
 
 # Tests
 
-To run the unit tests, make sure you have `nose` installed. Afterwards,
+To run the unit tests, first install test requirements with
 
-```
-$ make test
-```
+`pip install -r requirements-test.txt`
 
-should do the trick.
+and then run
+
+`py.test test/`
 
 # Installation and Usage
 
