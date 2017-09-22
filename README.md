@@ -11,11 +11,15 @@ for more information.
 
 To run the unit tests, first install test requirements with
 
-`pip install -r requirements-test.txt`
+```
+pip install -r requirements-test.txt
+```
 
 and then run
 
-`py.test test/`
+```
+py.test tests/
+```
 
 # Installation and Usage
 
