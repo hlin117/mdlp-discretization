@@ -9,7 +9,7 @@ for more information.
 
 # Installation and Usage
 
-This code was built using Cython, so you have to run the makefile
+This code is built using Cython, so you have to run the makefile
 in the directory.  First install the requirements with
 
 ```
