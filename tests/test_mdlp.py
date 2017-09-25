@@ -1,15 +1,12 @@
-from sklearn.utils.testing import assert_array_equal
-from sklearn.utils.testing import assert_equal
-from sklearn.utils.testing import assert_almost_equal
-from sklearn.utils.testing import assert_array_almost_equal
+import numpy as np
 
-import sys
-sys.path.insert(0, "..")
+from numpy.testing import assert_almost_equal
+from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_equal
+from numpy.testing import assert_equal
 
 from discretization import MDLP
 from _mdlp import slice_entropy, find_cut
-
-import numpy as np
 
 
 def test_slice_entropy():

@@ -7,23 +7,19 @@ Please read the original paper
 <a href="http://sci2s.ugr.es/keel/pdf/algorithm/congreso/fayyad1993.pdf">here</a>
 for more information.
 
-# Tests
-
-To run the unit tests, make sure you have `nose` installed. Afterwards,
-
-```
-$ make test
-```
-
-should do the trick.
-
 # Installation and Usage
 
-This code was built using Cython, so you have to run the makefile
-in the directory.
+This code is built using Cython, so you have to run the makefile
+in the directory.  First install the requirements with
 
 ```
-$ make
+pip install -r requirements.txt
+```
+
+and then run
+
+```
+make
 ```
 
 Afterwards, assuming that `discretization.py` and `_mdlp.so` are in the
@@ -40,3 +36,18 @@ same directory, you can import the MDLP class.
 ```
 
 I recommend creating a virtual environment for this project.
+
+# Tests
+
+To run the unit tests, first install test requirements with
+
+```
+pip install -r requirements-test.txt
+```
+
+and then run
+
+```
+py.test tests/
+```
+
