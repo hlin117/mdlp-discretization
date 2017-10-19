@@ -24,11 +24,11 @@ when using this project.
 from mdlp.discretization import MDLP
 from sklearn.datasets import load_iris
 
-mdlp = MDLP()
+transformer = MDLP()
 iris = load_iris()
 X, y = iris.data, iris.target
 
-X_disc = mdlp.fit_transform(X, y)
+X_disc = transformer.fit_transform(X, y)
 ```
 
 # Tests
