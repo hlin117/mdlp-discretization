@@ -9,7 +9,7 @@ from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
 from sklearn.utils import check_array, check_X_y, column_or_1d, check_random_state
 from sklearn.utils import check_random_state
-from _mdlp import MDLPDiscretize
+from mdlp._mdlp import MDLPDiscretize
 
 class MDLP(BaseEstimator, TransformerMixin):
     """Implements the MDLP discretization criterion from Usama Fayyad's
