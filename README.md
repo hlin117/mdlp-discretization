@@ -15,6 +15,8 @@ Install using pip
 pip install .
 ```
 
+As with all python packages, it is recommended to create a virtual environment
+when using this project.
 
 # Example
 
@@ -27,9 +29,6 @@ pip install .
 >>> mdlp = MDLP()
 >>> conv_X = mdlp.fit_transform(X, y)
 ```
-
-As with all python packages, it is recommended to create a virtual environment
-when using this project.
 
 # Tests
 
