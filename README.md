@@ -9,21 +9,14 @@ for more information.
 
 # Installation and Usage
 
-This code is built using Cython, so you have to run the makefile
-in the directory.  First install the requirements with
+Install using pip 
 
 ```
-pip install -r requirements.txt
+pip install .
 ```
 
-and then run
 
-```
-make
-```
-
-Afterwards, assuming that `discretization.py` and `_mdlp.so` are in the
-same directory, you can import the MDLP class.
+# Example
 
 ```
 >>> from discretization import MDLP
@@ -35,19 +28,20 @@ same directory, you can import the MDLP class.
 >>> conv_X = mdlp.fit_transform(X, y)
 ```
 
-I recommend creating a virtual environment for this project.
+As with all python packages, it is recommended to create a virtual environment
+when using this project.
 
 # Tests
 
-To run the unit tests, first install test requirements with
+To run the unit tests, install in development mode
 
 ```
-pip install -r requirements-test.txt
+pip install -e .
 ```
 
-and then run
+and then
 
 ```
-py.test tests/
+py.test
 ```
 
