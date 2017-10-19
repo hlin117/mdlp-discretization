@@ -33,7 +33,7 @@ if __name__ == '__main__':
       author_email='hlin117@gmail.com',
       install_requires=[
         'setuptools>=18.0',
-        'cython>=0.23.2',
+        # 'cython>=0.23.2',
         'numpy>=1.11.2',
         'scipy>=0.18.1',
         'scikit-learn>=0.18.1',
