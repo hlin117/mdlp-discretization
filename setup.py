@@ -1,12 +1,25 @@
-import numpy as np
-from setuptools import setup, Extension, find_packages
+from setuptools import Extension, find_packages, setup
 
 if __name__ == '__main__':
+  try:
+    from Cython.setuptools import build_ext
+  except:
+    from setuptools.command.build_ext import build_ext
+    sources = ['mdlp/_mdlp.pyx']
+  else:
+    sources = ['mdlp/_mdlp.cpp']
+
+  class custom_build_ext(build_ext):
+    def run(self):
+      import numpy
+      self.include_dirs.append(numpy.get_include())
+      build_ext.run(self)
+
   cpp_ext = Extension(
       'mdlp._mdlp',
-      sources=['mdlp/_mdlp.pyx'],
+      sources=sources,
       libraries=[],
-      include_dirs=[np.get_include()],
+      include_dirs=[],
       language='c++',
   )
 
@@ -28,4 +41,5 @@ if __name__ == '__main__':
       ],
       packages=find_packages(),
       ext_modules=[cpp_ext],
+      cmdclass={'build_ext': custom_build_ext},
   )
