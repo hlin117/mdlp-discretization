@@ -13,6 +13,11 @@ if __name__ == '__main__':
     sources = ['mdlp/_mdlp.cpp']
 
   class custom_build_ext(build_ext):
+    """
+    custom class to add numpy include dirs when we are building the extension.
+    this avoids requiring that numpy be separately pre-installed before running
+    setup.
+    """
     def run(self):
       import numpy
       self.include_dirs.append(numpy.get_include())
