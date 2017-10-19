@@ -5,7 +5,7 @@ if __name__ == '__main__':
   # for the approach to pushing numpy an cython dependencies into extension building only
   try:
     # if Cython is available, we will rebuild from the pyx file directly
-    from Cython.setuptools import build_ext
+    from Cython.Distutils import build_ext
     sources = ['mdlp/_mdlp.pyx']
   except:
     # else we build from the cpp file included in the distribution

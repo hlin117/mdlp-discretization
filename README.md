@@ -45,3 +45,8 @@ and then
 py.test
 ```
 
+# Development
+
+To submit changes to this project, make sure that you have Cython installed and
+submit the compiled *.cpp file along with changes to python code after running
+installation locally.
