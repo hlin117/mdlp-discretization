@@ -12,7 +12,7 @@ for more information.
 Install using pip 
 
 ```
-pip install .
+pip install git+https://github.com/hlin117/mdlp-discretization.git
 ```
 
 As with all python packages, it is recommended to create a virtual environment
@@ -33,16 +33,18 @@ X_disc = transformer.fit_transform(X, y)
 
 # Tests
 
-To run the unit tests, install in development mode
+To run the unit tests, clone the repo and install in development mode
 
 ```
+git clone https://github.com/hlin117/mdlp-discretization.git
+cd mdlp-discretization
 pip install -e .
 ```
 
-and then
+then run tests with py.test
 
 ```
-py.test
+py.test tests
 ```
 
 # Development
