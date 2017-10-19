@@ -21,13 +21,14 @@ when using this project.
 # Example
 
 ```
->>> from discretization import MDLP
->>> from sklearn.datasets import load_iris
->>> iris = load_iris()
->>> X = iris.data
->>> y = iris.target
->>> mdlp = MDLP()
->>> conv_X = mdlp.fit_transform(X, y)
+from mdlp.discretization import MDLP
+from sklearn.datasets import load_iris
+
+mdlp = MDLP()
+iris = load_iris()
+X, y = iris.data, iris.target
+
+X_disc = mdlp.fit_transform(X, y)
 ```
 
 # Tests
