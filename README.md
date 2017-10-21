@@ -9,7 +9,7 @@ for more information.
 
 # Installation and Usage
 
-Install using pip 
+Install using pip
 
 ```
 pip install git+https://github.com/$repo_location

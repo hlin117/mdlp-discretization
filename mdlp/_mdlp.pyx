@@ -1,4 +1,5 @@
 from __future__ import division
+import cython
 import numpy as np
 cimport numpy as np
 
@@ -9,7 +10,6 @@ from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
 from libcpp.vector cimport vector as stdvector
 from scipy.stats import entropy
-import cython
 
 # some basic type definitions
 ctypedef np.npy_intp SIZE_t  # Type for indices and counters
