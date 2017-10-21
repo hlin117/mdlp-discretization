@@ -9,45 +9,46 @@ for more information.
 
 # Installation and Usage
 
-This code is built using Cython, so you have to run the makefile
-in the directory.  First install the requirements with
+Install using pip
 
 ```
-pip install -r requirements.txt
+pip install git+https://github.com/$repo_location
 ```
 
-and then run
+As with all python packages, it is recommended to create a virtual environment
+when using this project.
+
+# Example
 
 ```
-make
-```
+from mdlp.discretization import MDLP
+from sklearn.datasets import load_iris
 
-Afterwards, assuming that `discretization.py` and `_mdlp.so` are in the
-same directory, you can import the MDLP class.
+transformer = MDLP()
+iris = load_iris()
+X, y = iris.data, iris.target
 
+X_disc = transformer.fit_transform(X, y)
 ```
->>> from discretization import MDLP
->>> from sklearn.datasets import load_iris
->>> iris = load_iris()
->>> X = iris.data
->>> y = iris.target
->>> mdlp = MDLP()
->>> conv_X = mdlp.fit_transform(X, y)
-```
-
-I recommend creating a virtual environment for this project.
 
 # Tests
 
-To run the unit tests, first install test requirements with
+To run the unit tests, clone the repo and install in development mode
 
 ```
-pip install -r requirements-test.txt
+git clone https://github.com/$repo_location
+cd mdlp-discretization
+pip install -e .
 ```
 
-and then run
+then run tests with py.test
 
 ```
-py.test tests/
+py.test tests
 ```
 
+# Development
+
+To submit changes to this project, make sure that you have Cython installed and
+submit the compiled *.cpp file along with changes to python code after running
+installation locally.
