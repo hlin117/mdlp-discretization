@@ -115,7 +115,7 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         X = check_array(X, force_all_finite=True, ensure_2d=False)
         y = column_or_1d(y)
-        y = check_array(y, ensure_2d=False, dtype=int)
+        y = check_array(y, ensure_2d=False, dtype=np.int64)
         X, y = check_X_y(X, y)
 
         if not self.shuffle:
