@@ -1,16 +1,26 @@
 from __future__ import division
-from cpython.mem cimport PyMem_Malloc
-from cpython.mem cimport PyMem_Free
+import cython
 import numpy as np
 cimport numpy as np
-from scipy.stats import entropy
+
+from cpython.mem cimport PyMem_Free
+from cpython.mem cimport PyMem_Malloc
+from libc.math cimport INFINITY
 from libc.math cimport log, pow
 from libcpp.set cimport set as stdset
 from libcpp.vector cimport vector as stdvector
-from libc.math cimport INFINITY
-import cython
+from scipy.stats import entropy
 
+# some basic type definitions
+ctypedef np.npy_intp SIZE_t  # Type for indices and counters
+ctypedef SIZE_t* LEVEL
+ctypedef np.float64_t FLOAT
 cdef SIZE_t LEVEL_SIZE = sizeof(SIZE_t) * 3
+cdef inline void set_level(LEVEL level, SIZE_t start, SIZE_t end, SIZE_t depth):
+    level[0] = start
+    level[1] = end
+    level[2] = depth
+
 
 @cython.boundscheck(False)
 def MDLPDiscretize(col, y, int min_depth):
