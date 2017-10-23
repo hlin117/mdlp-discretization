@@ -4,7 +4,7 @@ This is an implementation of Usama Fayyad's entropy based
 expert binning method.
 
 Please read the original paper
-<a href="http://sci2s.ugr.es/keel/pdf/algorithm/congreso/fayyad1993.pdf">here</a>
+<a href="http://web.donga.ac.kr/kjunwoo/files/Multi%20interval%20discretization%20of%20continuous%20valued%20attributes%20for%20classification%20learning.pdf">here</a>
 for more information.
 
 # Installation and Usage
@@ -12,7 +12,7 @@ for more information.
 Install using pip
 
 ```
-pip install git+https://github.com/$repo_location
+pip install git+https://github.com/hlin117/mdlp-discretization
 ```
 
 As with all python packages, it is recommended to create a virtual environment
@@ -34,7 +34,7 @@ when using this project.
 To run the unit tests, clone the repo and install in development mode
 
 ```
-git clone https://github.com/$repo_location
+git clone https://github.com/hlin117/mdlp-discretization
 cd mdlp-discretization
 pip install -e .
 ```

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Implements the MDLP discretization criterion from Usama Fayyad's paper
 "Multi-Interval Discretization of Continuous-Valued Attributes for
@@ -19,8 +20,7 @@ if __name__ == '__main__':
         sources = ['mdlp/_mdlp.cpp']
 
     class CustomBuildExt(build_ext):
-        """
-        Custom build_ext class to defer numpy imports until needed.
+        """Custom build_ext class to defer numpy imports until needed.
 
         Overrides the run command for building an extension and adds in numpy
         include dirs to the extension build. Doing this at extension build time
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     setup(
         name='mdlp-discretization',
-        version='0.1',
+        version='0.3',
         description=__doc__,
         license='BSD 3 Clause',
         url='github.com/hlin117/mdlp-discretization',
