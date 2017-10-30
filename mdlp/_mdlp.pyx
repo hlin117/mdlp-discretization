@@ -31,6 +31,13 @@ def MDLPDiscretize(col, y, int min_depth):
     col = col[order]
     y = y[order]
 
+    labels_map = dict()
+    for i in range(len(col)):
+      if col[i] in labels_map:
+        labels_map[col[i]].add(y[i])
+      else:
+        labels_map[col[i]] = {y[i]}
+
     cdef stdset[FLOAT] cut_points = stdset[FLOAT]()
 
     # Now we do a depth first search to create cut_points
@@ -47,7 +54,7 @@ def MDLPDiscretize(col, y, int min_depth):
         start, end, depth = unwrap(currlevel)
         PyMem_Free(currlevel)
 
-        k = find_cut(y, start, end)
+        k = find_cut(col, y, labels_map, start, end)
 
         # Need to see whether the "front" and "back" of the interval need
         # to be float("-inf") or float("inf")
@@ -113,7 +120,7 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
     return gain <= 1 / N * (log(N - 1) + delta)
 
 @cython.boundscheck(False)
-def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
+def find_cut(np.ndarray[np.float64_t, ndim=1] col, np.ndarray[np.int64_t, ndim=1] y, dict labels_map, int start, int end):
     """Finds the best cut between the specified interval.
 
     If k split the array into two sub arrays A and B, then
@@ -155,10 +162,16 @@ def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
         SIZE_t k = -1
         int ind
         float first_half, second_half, curr_entropy
-    for ind in range(start + 1, end):
 
-        # I choose not to use a `min` function here for this optimization.
-        if y[ind-1] == y[ind]:
+    for ind in range(start + 1, end):
+        if col[ind - 1] == col[ind]:
+            # if the previous col-value is the same as the current one then we
+            # do not consider this cut point
+            continue
+        elif labels_map[col[ind - 1]] == labels_map[col[ind]] and len(labels_map[col[ind]]) == 1:
+            # if there is a single y-value for the current col-value and it is
+            # the same as the single y-value for the previous col-value then we
+            # do not consider this cut point
             continue
 
         # Finds the partition entropy, and see if this entropy is minimum
