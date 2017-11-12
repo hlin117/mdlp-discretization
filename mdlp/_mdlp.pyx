@@ -136,8 +136,15 @@ def find_cut(np.ndarray[np.float64_t, ndim=1] col, np.ndarray[np.int64_t, ndim=1
 
     Parameters
     ----------
+    col: 1-d numpy array
+        column values
+
     y : 1-d numpy array
         class labels
+
+    labels_map: dict
+        maps each value appearing in col to a set containing all of the class
+        labels that appear for that value
 
     start : int
         From where we start probing `y` for the best cut.
