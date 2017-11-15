@@ -59,6 +59,6 @@ def test_fit_transform():
   translated_disc = MDLP(shuffle=False).fit_transform(X - 5, y)
   assert_array_equal(translated_disc, expected)
 
-  # discretization is invariant under translation of the data
+  # discretization is invariant under renaming of the labels
   relabeled_disc = MDLP(shuffle=False).fit_transform(X, y + 1)
   assert_array_equal(relabeled_disc, expected)
