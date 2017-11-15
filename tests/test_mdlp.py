@@ -1,6 +1,6 @@
 import itertools
-import pytest
 import numpy as np
+import pytest
 
 from numpy.testing import assert_almost_equal
 from numpy.testing import assert_array_almost_equal
@@ -34,52 +34,31 @@ def test_find_cut_no_cut():
     k = find_cut(y, 0, len(y))
     assert_equal(-1, k)
 
-def test_e2e():
+def test_fit_transform():
   X = np.array([
     [0.1, 0.1],
-    [0.2, 1.1],
+    [0.2, 0.4],
     [0.3, 0.2],
-    [1.5, .9]
+    [0.4, 0.3]
   ])
-  y = np.array([0, 0, 0, 1])
+  y = np.array([0, 0, 1, 2])
   transformed = MDLP(shuffle=False).fit_transform(X, y)
-  expected = np.array([
-    [0, 0],
+  expected = [
     [0, 0],
     [0, 0],
     [1, 0],
-  ])
+    [2, 0],
+  ]
   assert_array_equal(transformed, expected)
 
-@pytest.mark.skip(reason='demonstrating behavior to be fixed')
-def test_e2e_duplicates():
-  X = np.array([
-    [0.1],
-    [0.2],
-    [0.3],
-    [0.3],
-    [0.3],
-    [0.4]
-  ])
-  y = np.array([0, 0, 0, 1, 1, 1])
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
-  expected = np.array([
-    [0],
-    [0],
-    [0],
-    [0],
-    [0],
-    [1],
-  ])
-  missed = 0
-  for p in itertools.permutations(range(X.shape[0])):
-    inds = list(p)
-    X_shuff = X[inds]
-    y_shuff = y[inds]
-    expected_shuff = expected[inds]
-    transformed = MDLP(shuffle=False).fit_transform(X_shuff, y_shuff)
-    try:
-      assert_array_equal(expected_shuff, transformed)
-    except:
-      missed += 1
-  assert missed == 0, missed
+  # discretization is invariant under rescaling of the data
+  scaled_disc = MDLP(shuffle=False).fit_transform(10 * X, y)
+  assert_array_equal(scaled_disc, expected)
+
+  # discretization is invariant under translation of the data
+  translated_disc = MDLP(shuffle=False).fit_transform(X - 5, y)
+  assert_array_equal(translated_disc, expected)
+
+  # discretization is invariant under translation of the data
+  relabeled_disc = MDLP(shuffle=False).fit_transform(X, y + 1)
+  assert_array_equal(relabeled_disc, expected)
