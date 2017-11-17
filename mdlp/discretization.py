@@ -116,17 +116,16 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         y : A list or array of class labels corresponding to `X`.
         """
+        X = check_array(X, force_all_finite=True, ensure_2d=False)
+        y = column_or_1d(y)
+        y = check_array(y, ensure_2d=False, dtype=np.int64)
+        X, y = check_X_y(X, y)
 
         self.dimensions_ = len(X.shape)
 
         if self.dimensions_ > 2:
             raise ValueError("Invalid input dimension for `X`. Input shape is"
                              "{0}".format(X.shape))
-
-        X = check_array(X, force_all_finite=True, ensure_2d=False)
-        y = column_or_1d(y)
-        y = check_array(y, ensure_2d=False, dtype=np.int64)
-        X, y = check_X_y(X, y)
 
         if not self.shuffle:
             import warnings
@@ -167,6 +166,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         """
         X = check_array(X, force_all_finite=True, ensure_2d=False)
         check_is_fitted(self, "cut_points_")
+
         if self.dimensions_ == 1:
             output = np.searchsorted(self.cut_points_, X)
         else:
