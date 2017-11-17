@@ -24,8 +24,7 @@ cdef inline void set_level(LEVEL level, SIZE_t start, SIZE_t end, SIZE_t depth):
 
 @cython.boundscheck(False)
 def MDLPDiscretize(col, y, int min_depth):
-    """Performs the discretization process on X and y
-    """
+    """Performs the discretization process on X and y"""
 
     order = np.argsort(col)
     col = col[order]
@@ -114,18 +113,17 @@ cdef bint reject_split(np.ndarray[np.int64_t, ndim=1] y, int start, int end, int
 
 @cython.boundscheck(False)
 def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
-    """Finds the best cut between the specified interval.
+    """Finds the cut point between `start` and `end`.
 
-    If k split the array into two sub arrays A and B, then
-    k is the last index of A. In other words, let start == 0 and end == n.
-    We might have the array
+    Returns an index, `k`, which splits `y` into two sub arrays A and B,
+    where `k` is the first index of B. Thus, if `n` is the length of
+    `y`, then `k` is in the range {1, 2, ..., n}. Visually, `k` may imply
+    the following sub arrays A and B:
 
         [0, 1, 2, 3, ..., k - 1] [k, k + 2, ..., n]
 
-    Therefore, k is in the range {1, 2, ..., n}. (If k == n, then array B
-    is simply of length 1.)
-
-    If k = -1, then no good cut point was found.
+    If k = -1, then there is no index `k` which satisfies the MDLP cutting
+    criterion.
 
     Parameters
     ----------
@@ -143,7 +141,6 @@ def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     -------
     k : int
         Integer index of the best cut.
-
     """
 
     # Want to probe for the best partition _entropy in a "smart" way
@@ -151,7 +148,7 @@ def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
     # and [ind, end).
     cdef:
         int length = end - start
-        float prev_entropy = np.inf #INFINITY
+        float prev_entropy = np.inf  #INFINITY
         SIZE_t k = -1
         int ind
         float first_half, second_half, curr_entropy
@@ -161,7 +158,7 @@ def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
         if y[ind-1] == y[ind]:
             continue
 
-        # Finds the partition entropy, and see if this entropy is minimum
+        # Find the partition entropy, and check if this entropy is minimum
         first_half = (<float> (ind - start)) / length \
                             * slice_entropy(y, start, ind)[0]
         second_half = (<float> (end - ind)) / length \
