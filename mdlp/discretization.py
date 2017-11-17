@@ -162,8 +162,8 @@ class MDLP(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         """Discretizes values in X into {0, ..., k-1}.
 
-        `k` is the number of intervals the discretizer creates from a
-        given continuous feature.)
+        `k` is the number of bins the discretizer creates from a continuous
+        feature.
         """
         X = check_array(X, force_all_finite=True, ensure_2d=False)
         check_is_fitted(self, "cut_points_")

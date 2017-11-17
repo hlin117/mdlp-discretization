@@ -24,7 +24,7 @@ cdef inline void set_level(LEVEL level, SIZE_t start, SIZE_t end, SIZE_t depth):
 
 @cython.boundscheck(False)
 def MDLPDiscretize(col, y, int min_depth):
-    """Performs the discretization process on X and y"""
+    """Performs MDLP discretization on X and y"""
 
     order = np.argsort(col)
     col = col[order]
@@ -143,9 +143,6 @@ def find_cut(np.ndarray[np.int64_t, ndim=1] y, int start, int end):
         Integer index of the best cut.
     """
 
-    # Want to probe for the best partition _entropy in a "smart" way
-    # Input is the splitting index, to create partitions [start, ind)
-    # and [ind, end).
     cdef:
         int length = end - start
         float prev_entropy = np.inf  #INFINITY
