@@ -166,7 +166,6 @@ class MDLP(BaseEstimator, TransformerMixin):
         """
         X = check_array(X, force_all_finite=True, ensure_2d=False)
         check_is_fitted(self, "cut_points_")
-
         if self.dimensions_ == 1:
             output = np.searchsorted(self.cut_points_, X)
         else:
