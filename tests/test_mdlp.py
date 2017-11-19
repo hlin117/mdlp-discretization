@@ -42,23 +42,23 @@ def test_fit_transform():
     [0.4, 0.3]
   ])
   y = np.array([0, 0, 1, 2])
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
   expected = [
     [0, 0],
     [0, 0],
     [1, 0],
     [2, 0],
   ]
-  assert_array_equal(transformed, expected)
+  transformed = MDLP(shuffle=False).fit_transform(X, y)
+  assert_array_equal(expected, transformed)
 
   # discretization is invariant under rescaling of the data
   scaled_disc = MDLP(shuffle=False).fit_transform(10 * X, y)
-  assert_array_equal(scaled_disc, expected)
+  assert_array_equal(expected, scaled_disc)
 
   # discretization is invariant under translation of the data
   translated_disc = MDLP(shuffle=False).fit_transform(X - 5, y)
-  assert_array_equal(translated_disc, expected)
+  assert_array_equal(expected, translated_disc)
 
   # discretization is invariant under renaming of the labels
   relabeled_disc = MDLP(shuffle=False).fit_transform(X, y + 1)
-  assert_array_equal(relabeled_disc, expected)
+  assert_array_equal(expected, relabeled_disc)
