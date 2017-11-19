@@ -4,15 +4,25 @@
 #==============================================================================
 
 from __future__ import division
-import numpy as np
+
 from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
-from sklearn.utils import check_array, check_X_y, column_or_1d, check_random_state
-from sklearn.utils import check_random_state
+from sklearn.utils import (
+    check_array,
+    check_X_y,
+    column_or_1d,
+    check_random_state,
+)
+from sklearn.utils.validation import check_is_fitted
 from mdlp._mdlp import MDLPDiscretize
 
+import numpy as np
+
+
 class MDLP(BaseEstimator, TransformerMixin):
-    """Implements the MDLP discretization criterion from Usama Fayyad's
+    """Bins continuous values using MDLP "expert binning" method.
+
+    Implements the MDLP discretization algorithm from Usama Fayyad's
     paper "Multi-Interval Discretization of Continuous-Valued
     Attributes for Classification Learning". Given the class labels
     for each sample, this transformer attempts to discretize a
@@ -150,13 +160,13 @@ class MDLP(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        """Converts the continuous features in X into integers from
-        0... k-1 (`k` is the number of intervals the discretizer created
-        from a given continuous feature.)
+        """Discretizes values in X into {0, ..., k-1}.
+
+        `k` is the number of bins the discretizer creates from a continuous
+        feature.
         """
-        if self.cut_points_ is None:
-            raise ValueError("You must fit the MDLP discretizer before "
-                             "transforming data.")
+        X = check_array(X, force_all_finite=True, ensure_2d=False)
+        check_is_fitted(self, "cut_points_")
         if self.dimensions_ == 1:
             output = np.searchsorted(self.cut_points_, X)
         else:
