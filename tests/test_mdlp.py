@@ -12,9 +12,7 @@ from mdlp._mdlp import slice_entropy, find_cut
 
 
 def test_slice_entropy():
-
     y = np.array([0, 0, 0, 1, 1, 0, 1, 3, 1, 1])
-
     entropy1, k1 = slice_entropy(y, 0, 3)
     entropy2, k2 = slice_entropy(y, 3, 10)
 
@@ -35,6 +33,13 @@ def test_find_cut_no_cut():
     assert_equal(-1, k)
 
 def test_fit_transform():
+  expected = [
+    [0, 0],
+    [0, 0],
+    [1, 0],
+    [2, 0],
+  ]
+
   X = np.array([
     [0.1, 0.1],
     [0.2, 0.4],
@@ -42,23 +47,31 @@ def test_fit_transform():
     [0.4, 0.3]
   ])
   y = np.array([0, 0, 1, 2])
-  expected = [
-    [0, 0],
-    [0, 0],
-    [1, 0],
-    [2, 0],
-  ]
+  for i in range(10):
+    scaled_disc = MDLP(shuffle=False).fit_transform(X / 10**i, y)
+    assert_array_equal(expected, scaled_disc)
+
+def test_translation():
+  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
+
+  X = np.arange(9, dtype=float).reshape(-1, 1)
+  y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
   transformed = MDLP(shuffle=False).fit_transform(X, y)
   assert_array_equal(expected, transformed)
 
-  # discretization is invariant under rescaling of the data
-  scaled_disc = MDLP(shuffle=False).fit_transform(10 * X, y)
-  assert_array_equal(expected, scaled_disc)
+  # translating data does not affect discretization result
+  translated = MDLP(shuffle=False).fit_transform(X - 5, y)
+  assert_array_equal(expected, translated)
 
-  # discretization is invariant under translation of the data
-  translated_disc = MDLP(shuffle=False).fit_transform(X - 5, y)
-  assert_array_equal(expected, translated_disc)
+def test_coerce_list():
+  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
-  # discretization is invariant under renaming of the labels
-  relabeled_disc = MDLP(shuffle=False).fit_transform(X, y + 1)
-  assert_array_equal(expected, relabeled_disc)
+  X = [[i] for i in range(9)]
+  y = [0, 0, 0, 0, 1, 0, 1, 1, 1]
+  transformed = MDLP(shuffle=False).fit_transform(X, y)
+  assert_array_equal(expected, transformed)
+
+  np_X = np.arange(9).reshape(-1, 1)
+  np_y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
+  np_transformed = MDLP(shuffle=False).fit_transform(np_X, np_y)
+  assert_array_equal(expected, np_transformed)

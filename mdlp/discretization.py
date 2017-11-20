@@ -116,7 +116,7 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         y : A list or array of class labels corresponding to `X`.
         """
-        X = check_array(X, force_all_finite=True, ensure_2d=False)
+        X = check_array(X, force_all_finite=True, ensure_2d=False, dtype=np.float64)
         y = column_or_1d(y)
         y = check_array(y, ensure_2d=False, dtype=np.int64)
         X, y = check_X_y(X, y)
