@@ -31,7 +31,7 @@ def test_find_cut_no_cut():
     k = find_cut(y, 0, len(y))
     assert_equal(-1, k)
 
-def test_fit_transform():
+def test_fit_transform_scale():
   expected = [
     [0, 0],
     [0, 0],
@@ -50,7 +50,7 @@ def test_fit_transform():
     scaled_disc = MDLP(shuffle=False).fit_transform(X / 10**i, y)
     assert_array_equal(expected, scaled_disc)
 
-def test_translation():
+def test_fit_transform_translate():
   expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
   X = np.arange(9, dtype=float).reshape(-1, 1)
