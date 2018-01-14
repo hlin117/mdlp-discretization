@@ -17,6 +17,7 @@ from sklearn.utils.validation import check_is_fitted
 from mdlp._mdlp import MDLPDiscretize
 
 import numpy as np
+import scipy
 
 
 class MDLP(BaseEstimator, TransformerMixin):
@@ -116,10 +117,11 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         y : A list or array of class labels corresponding to `X`.
         """
-        X = check_array(X, force_all_finite=True, ensure_2d=False, dtype=np.float64)
+        X = check_array(X, accept_sparse=True, force_all_finite=True, \
+                        ensure_2d=False, dtype=np.float64)
         y = column_or_1d(y)
         y = check_array(y, ensure_2d=False, dtype=np.int64)
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=True)
 
         self.dimensions_ = len(X.shape)
 
@@ -146,6 +148,8 @@ class MDLP(BaseEstimator, TransformerMixin):
             for index, col in enumerate(X.T):
                 if index not in self.continuous_features_:
                     continue
+                if scipy.sparse.issparse(col):
+                    col = col.toarray()[0]
                 cut_points = MDLPDiscretize(col, y, self.min_depth)
                 self.cut_points_[index] = cut_points
         else:
@@ -164,14 +168,20 @@ class MDLP(BaseEstimator, TransformerMixin):
         `k` is the number of bins the discretizer creates from a continuous
         feature.
         """
-        X = check_array(X, force_all_finite=True, ensure_2d=False)
+        X = check_array(X, accept_sparse=True, force_all_finite=True, ensure_2d=False)
         check_is_fitted(self, "cut_points_")
         if self.dimensions_ == 1:
             output = np.searchsorted(self.cut_points_, X)
         else:
+            is_sparse = scipy.sparse.issparse(X)
+            if is_sparse:
+                sparse_format = X.getformat()
+                X = X.toarray()
             output = X.copy()
             for i in self.continuous_features_:
                 output[:, i] = np.searchsorted(self.cut_points_[i], X[:, i])
+            if is_sparse:
+                output = scipy.sparse.csr.csr_matrix(output).asformat(sparse_format)
         return output
 
     def cat2intervals(self, X, index=None):
