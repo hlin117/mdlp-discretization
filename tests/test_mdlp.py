@@ -131,3 +131,21 @@ def test_drop_collapsed_features_sparse():
     y = np.array([0, 0, 1, 2])
     disc = MDLP(drop_collapsed_features=True, shuffle=False).fit_transform(X, y)
     assert_array_equal(expected, disc.toarray())
+
+def test_multiprocessing():
+    expected = [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [0, 2, 0, 2, 0],
+    ]
+
+    X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(n_jobs=3, shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc)

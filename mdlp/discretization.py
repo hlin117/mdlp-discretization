@@ -5,6 +5,8 @@
 
 from __future__ import division
 
+import itertools
+import multiprocessing as mp
 from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
 from sklearn.utils import (
@@ -53,6 +55,10 @@ class MDLP(BaseEstimator, TransformerMixin):
         random_state parameter. Thus, setting shuffle=False will override
         the affect of random_state.)
 
+    n_jobs : int (default=1)
+        The number of jobs to run in parallel for both fit and transform.
+        If -1, then the number of jobs is set to the number of cores.
+
     random_state : int (default=None)
         Seed of pseudo RNG to use when shuffling the data. Affects the
         outcome of MDLP if there are multiple samples with the same
@@ -98,13 +104,14 @@ class MDLP(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, continuous_features=None, min_depth=0, shuffle=True,
-                 drop_collapsed_features=False, random_state=None):
+                 drop_collapsed_features=False, n_jobs=1, random_state=None):
         # Parameters
         self.continous_features = continuous_features
         self.min_depth = min_depth
         self.random_state = random_state
         self.shuffle = shuffle
         self.drop_collapsed_features = drop_collapsed_features
+        self.n_jobs = n_jobs
 
         # Attributes
         self.continuous_features_ = continuous_features
@@ -146,18 +153,7 @@ class MDLP(BaseEstimator, TransformerMixin):
             y = y[perm]
 
         if self.dimensions_ == 2:
-            if self.continuous_features_ is None:
-                self.continuous_features_ = np.arange(X.shape[1])
-
-            self.cut_points_ = dict()
-
-            for index, col in enumerate(X.T):
-                if index not in self.continuous_features_:
-                    continue
-                if scipy.sparse.issparse(col):
-                    col = col.toarray()[0]
-                cut_points = MDLPDiscretize(col, y, self.min_depth)
-                self.cut_points_[index] = cut_points
+            self.__fit_2d(X, y)
         else:
             if self.continuous_features_ is not None:
                 raise ValueError("Passed in a 1-d column of continuous features, "
@@ -170,6 +166,25 @@ class MDLP(BaseEstimator, TransformerMixin):
             len([cp for cp in self.cut_points_.values() if cp.size == 0])
 
         return self
+
+    def __fit_2d(self, X, y):
+        if self.continuous_features_ is None:
+            self.continuous_features_ = np.arange(X.shape[1])
+
+        inputs = zip(filter(lambda indcol: indcol[0] in self.continuous_features_, \
+                            enumerate(X.T)), \
+                     itertools.repeat(y), \
+                     itertools.repeat(self.min_depth))
+
+        if self.n_jobs > 1:
+            pool = mp.Pool(None if self.n_jobs < 1 else self.n_jobs)
+            results = pool.map(_calculate_cut_points, inputs)
+        else:
+            results = []
+            for inp in inputs:
+                results.append(_calculate_cut_points(inp))
+
+        self.cut_points_ = dict(results)
 
     def transform(self, X, y=None):
         """Discretizes values in X into {0, ..., k-1}.
@@ -186,6 +201,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         return output
 
     def __transform_2d(self, X):
+        # TODO: parallelise if n_jobs > 1
         if self.drop_collapsed_features:
             new_shape = (X.shape[0], X.shape[1] - self.__collapsed_features_count)
             output = self.__make_output(X, new_shape)
@@ -267,3 +283,12 @@ class MDLP(BaseEstimator, TransformerMixin):
         backs[cp_indices != numCuts] = cut_points[non_numCuts_mask]
 
         return [(front, back) for front, back in zip(fronts, backs)]
+
+
+# TODO: clean up how the arguments are passed -- make the caller do the unpacking work
+def _calculate_cut_points(inputs):
+    ((index, col), y, min_depth) = inputs
+    if scipy.sparse.issparse(col):
+        col = col.toarray()[0]
+    return index, MDLPDiscretize(col, y, min_depth)
+
