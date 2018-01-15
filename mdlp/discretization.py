@@ -110,6 +110,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         self.continuous_features_ = continuous_features
         self.cut_points_ = None
         self.dimensions_ = None
+        self.__collapsed_features_count = 0
 
     def fit(self, X, y):
         """Finds the intervals of interest from the input data.
@@ -165,6 +166,9 @@ class MDLP(BaseEstimator, TransformerMixin):
             cut_points = MDLPDiscretize(X, y, self.min_depth)
             self.cut_points_ = cut_points
 
+        self.__collapsed_features_count = \
+            len([cp for cp in self.cut_points_.values() if cp.size == 0])
+
         return self
 
     def transform(self, X, y=None):
@@ -177,36 +181,44 @@ class MDLP(BaseEstimator, TransformerMixin):
         check_is_fitted(self, "cut_points_")
         if self.dimensions_ == 1:
             output = np.searchsorted(self.cut_points_, X)
-        elif scipy.sparse.issparse(X):
-            output = self.__transform_sparse(X)
         else:
-            output = self.__transform_dense(X)
+            output = self.__transform_2d(X)
         return output
 
-    def __transform_dense(self, X):
+    def __transform_2d(self, X):
         if self.drop_collapsed_features:
-            collapsed_count = len([cp for cp in self.cut_points_.values() if cp.size == 0])
-            new_shape = (X.shape[0], X.shape[1] - collapsed_count)
-            output = np.ndarray(shape=new_shape, dtype=X.dtype)
+            new_shape = (X.shape[0], X.shape[1] - self.__collapsed_features_count)
+            output = self.__make_output(X, new_shape)
             output_col = 0
             for input_col in range(X.shape[1]):
                 if input_col in self.continuous_features_:
                     if self.cut_points_[input_col].size > 0:
                         output[:, output_col] = \
-                            np.searchsorted(self.cut_points_[input_col], X[:, input_col])
+                            np.searchsorted(self.cut_points_[input_col], \
+                                            self.__get_col(X, input_col))
                         output_col += 1
                 else:
-                    output[:, output_col] = X[:, input_col]
+                    output[:, output_col] = self.__get_col(X, input_col)
                     output_col += 1
         else:
             output = X.copy()
             for i in self.continuous_features_:
-                output[:, i] = np.searchsorted(self.cut_points_[i], X[:, i])
+                output[:, i] = np.searchsorted(self.cut_points_[i], self.__get_col(X, i))
         return output
 
-    def __transform_sparse(self, X):
-        # TODO: proper sparse implementation
-        return scipy.sparse.csr.csr_matrix(self.__transform_dense(X.toarray())).asformat(X.getformat())
+    def __make_output(self, X, shape):
+        if scipy.sparse.issparse(X):
+            output = scipy.sparse.dok_matrix(shape, dtype=X.dtype)
+        else:
+            output = np.ndarray(shape=shape, dtype=X.dtype)
+        return output
+
+    def __get_col(self, X, col_index):
+        if scipy.sparse.issparse(X):
+            col = X[:, col_index].toarray()
+        else:
+            col = X[:, col_index]
+        return col
 
     def cat2intervals(self, X, index=None):
         """Converts a categorical feature into a list of intervals.
