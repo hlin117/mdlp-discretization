@@ -76,7 +76,25 @@ def test_coerce_list():
     np_transformed = MDLP(shuffle=False).fit_transform(np_X, np_y)
     assert_array_equal(expected, np_transformed)
 
-def test_csr_input():
+def test_drop_collapsed_features_dense():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 1],
+        [2, 2],
+    ]
+
+    X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(drop_collapsed_features=True, shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc)
+
+def test_sparse_input():
     expected = [
         [0, 0],
         [0, 0],
@@ -93,4 +111,23 @@ def test_csr_input():
     X = scipy.sparse.csr_matrix(dense_X)
     y = np.array([0, 0, 1, 2])
     disc = MDLP(shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc.toarray())
+
+def test_drop_collapsed_features_sparse():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 1],
+        [2, 2],
+    ]
+
+    dense_X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    X = scipy.sparse.csr_matrix(dense_X)
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(drop_collapsed_features=True, shuffle=False).fit_transform(X, y)
     assert_array_equal(expected, disc.toarray())
