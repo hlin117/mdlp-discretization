@@ -56,7 +56,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         the affect of random_state.)
 
     n_jobs : int (default=1)
-        The number of jobs to run in parallel for both fit and transform.
+        The number of jobs to run in parallel for fit (but not transform).
         If -1, then the number of jobs is set to the number of cores.
 
     random_state : int (default=None)
@@ -111,6 +111,9 @@ class MDLP(BaseEstimator, TransformerMixin):
         self.random_state = random_state
         self.shuffle = shuffle
         self.drop_collapsed_features = drop_collapsed_features
+        if n_jobs < -1 or n_jobs == 0:
+            raise ValueError("Valid values for `n_jobs` are -1 or a positive integer."
+                             "supplied value: {0}".format(n_jobs))
         self.n_jobs = n_jobs
 
         # Attributes
@@ -171,14 +174,20 @@ class MDLP(BaseEstimator, TransformerMixin):
         if self.continuous_features_ is None:
             self.continuous_features_ = np.arange(X.shape[1])
 
-        inputs = zip(filter(lambda indcol: indcol[0] in self.continuous_features_, \
-                            enumerate(X.T)), \
-                     itertools.repeat(y), \
-                     itertools.repeat(self.min_depth))
+
+        def __append_y_and_min_depth(index_and_col):
+            (index, col) = index_and_col
+            return index, col, y, self.min_depth
+
+        inputs = map(__append_y_and_min_depth, \
+                     filter(lambda indcol: indcol[0] in self.continuous_features_, \
+                            enumerate(X.T)))
 
         if self.n_jobs > 1:
             pool = mp.Pool(None if self.n_jobs < 1 else self.n_jobs)
             results = pool.map(_calculate_cut_points, inputs)
+            pool.close()
+            pool.join()
         else:
             results = []
             for inp in inputs:
@@ -201,7 +210,6 @@ class MDLP(BaseEstimator, TransformerMixin):
         return output
 
     def __transform_2d(self, X):
-        # TODO: parallelise if n_jobs > 1
         if self.drop_collapsed_features:
             new_shape = (X.shape[0], X.shape[1] - self.__collapsed_features_count)
             output = self.__make_output(X, new_shape)
@@ -285,10 +293,12 @@ class MDLP(BaseEstimator, TransformerMixin):
         return [(front, back) for front, back in zip(fronts, backs)]
 
 
-# TODO: clean up how the arguments are passed -- make the caller do the unpacking work
 def _calculate_cut_points(inputs):
-    ((index, col), y, min_depth) = inputs
+    """Calculates the cut points given a single feature column and
+       corresponding labels. Expects the argument to be a tuple of
+       `(index, column, labels, min_depth)`.
+    """
+    (index, col, y, min_depth) = inputs
     if scipy.sparse.issparse(col):
         col = col.toarray()[0]
     return index, MDLPDiscretize(col, y, min_depth)
-

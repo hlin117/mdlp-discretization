@@ -133,6 +133,9 @@ def test_drop_collapsed_features_sparse():
     assert_array_equal(expected, disc.toarray())
 
 def test_multiprocessing():
+    """Only tests that the functionality is not affected, not that parallel
+       processing actually takes place.
+    """
     expected = [
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
