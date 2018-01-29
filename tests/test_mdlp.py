@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import scipy.sparse
 
 from numpy.testing import assert_almost_equal
 from numpy.testing import assert_array_almost_equal
@@ -32,45 +33,122 @@ def test_find_cut_no_cut():
     assert_equal(-1, k)
 
 def test_fit_transform_scale():
-  expected = [
-    [0, 0],
-    [0, 0],
-    [1, 0],
-    [2, 0],
-  ]
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 0],
+        [2, 0],
+    ]
 
-  X = np.array([
-    [0.1, 0.1],
-    [0.2, 0.4],
-    [0.3, 0.2],
-    [0.4, 0.3]
-  ])
-  y = np.array([0, 0, 1, 2])
-  for i in range(10):
-    scaled_disc = MDLP(shuffle=False).fit_transform(X / 10**i, y)
-    assert_array_equal(expected, scaled_disc)
+    X = np.array([
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.2],
+        [0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    for i in range(10):
+        scaled_disc = MDLP(shuffle=False).fit_transform(X / 10**i, y)
+        assert_array_equal(expected, scaled_disc)
 
 def test_fit_transform_translate():
-  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
+    expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
-  X = np.arange(9, dtype=float).reshape(-1, 1)
-  y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
-  assert_array_equal(expected, transformed)
+    X = np.arange(9, dtype=float).reshape(-1, 1)
+    y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
+    transformed = MDLP(shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, transformed)
 
-  # translating data does not affect discretization result
-  translated = MDLP(shuffle=False).fit_transform(X - 5, y)
-  assert_array_equal(expected, translated)
+    # translating data does not affect discretization result
+    translated = MDLP(shuffle=False).fit_transform(X - 5, y)
+    assert_array_equal(expected, translated)
 
 def test_coerce_list():
-  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
+    expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
-  X = [[i] for i in range(9)]
-  y = [0, 0, 0, 0, 1, 0, 1, 1, 1]
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
-  assert_array_equal(expected, transformed)
+    X = [[i] for i in range(9)]
+    y = [0, 0, 0, 0, 1, 0, 1, 1, 1]
+    transformed = MDLP(shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, transformed)
 
-  np_X = np.arange(9).reshape(-1, 1)
-  np_y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
-  np_transformed = MDLP(shuffle=False).fit_transform(np_X, np_y)
-  assert_array_equal(expected, np_transformed)
+    np_X = np.arange(9).reshape(-1, 1)
+    np_y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
+    np_transformed = MDLP(shuffle=False).fit_transform(np_X, np_y)
+    assert_array_equal(expected, np_transformed)
+
+def test_drop_collapsed_features_dense():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 1],
+        [2, 2],
+    ]
+
+    X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(drop_collapsed_features=True, shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc)
+
+def test_sparse_input():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 0],
+        [2, 0],
+    ]
+
+    dense_X = np.array([
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.2],
+        [0.4, 0.3]
+    ])
+    X = scipy.sparse.csr_matrix(dense_X)
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc.toarray())
+
+def test_drop_collapsed_features_sparse():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 1],
+        [2, 2],
+    ]
+
+    dense_X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    X = scipy.sparse.csr_matrix(dense_X)
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(drop_collapsed_features=True, shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc.toarray())
+
+def test_multiprocessing():
+    """Only tests that the functionality is not affected, not that parallel
+       processing actually takes place.
+    """
+    expected = [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
+        [0, 2, 0, 2, 0],
+    ]
+
+    X = np.array([
+        [0.1, 0.1, 0.1, 0.1, 0.1],
+        [0.4, 0.2, 0.4, 0.2, 0.4],
+        [0.2, 0.3, 0.2, 0.3, 0.2],
+        [0.3, 0.4, 0.3, 0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    disc = MDLP(n_jobs=3, shuffle=False).fit_transform(X, y)
+    assert_array_equal(expected, disc)
