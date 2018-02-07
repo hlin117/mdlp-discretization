@@ -21,56 +21,61 @@ def test_slice_entropy():
                         err_msg="Entropy was not calculated correctly.")
     assert_equal(k2, 3, "Incorrect number of classes found.")
 
+
 def test_find_cut():
     y = np.array([0, 0, 0, 0, 1, 0, 1, 1])
     k = find_cut(y, 0, len(y))
     assert_equal(4, k)
+
 
 def test_find_cut_no_cut():
     y = np.array([0, 0, 0, 0])
     k = find_cut(y, 0, len(y))
     assert_equal(-1, k)
 
-def test_fit_transform_scale():
-  expected = [
-    [0, 0],
-    [0, 0],
-    [1, 0],
-    [2, 0],
-  ]
 
-  X = np.array([
-    [0.1, 0.1],
-    [0.2, 0.4],
-    [0.3, 0.2],
-    [0.4, 0.3]
-  ])
-  y = np.array([0, 0, 1, 2])
-  for i in range(10):
-    scaled_disc = MDLP(shuffle=False).fit_transform(X / 10**i, y)
-    assert_array_equal(expected, scaled_disc)
+def test_fit_transform_scale():
+    expected = [
+        [0, 0],
+        [0, 0],
+        [1, 0],
+        [2, 0],
+    ]
+
+    X = np.array([
+        [0.1, 0.1],
+        [0.2, 0.4],
+        [0.3, 0.2],
+        [0.4, 0.3]
+    ])
+    y = np.array([0, 0, 1, 2])
+    for i in range(10):
+        scaled_disc = MDLP().fit_transform(X / 10**i, y)
+        assert_array_equal(expected, scaled_disc)
+
 
 def test_fit_transform_translate():
-  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
+    expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
-  X = np.arange(9, dtype=float).reshape(-1, 1)
-  y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
-  assert_array_equal(expected, transformed)
+    X = np.arange(9, dtype=float).reshape(-1, 1)
+    y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
+    transformed = MDLP().fit_transform(X, y)
+    assert_array_equal(expected, transformed)
 
-  # translating data does not affect discretization result
-  translated = MDLP(shuffle=False).fit_transform(X - 5, y)
-  assert_array_equal(expected, translated)
+    # translating data does not affect discretization result
+    translated = MDLP().fit_transform(X - 5, y)
+    assert_array_equal(expected, translated)
+
 
 def test_coerce_list():
-  expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
+    expected = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1]).reshape(-1, 1)
 
-  X = [[i] for i in range(9)]
-  y = [0, 0, 0, 0, 1, 0, 1, 1, 1]
-  transformed = MDLP(shuffle=False).fit_transform(X, y)
-  assert_array_equal(expected, transformed)
+    X = [[i] for i in range(9)]
+    y = [0, 0, 0, 0, 1, 0, 1, 1, 1]
+    transformed = MDLP().fit_transform(X, y)
+    assert_array_equal(expected, transformed)
 
-  np_X = np.arange(9).reshape(-1, 1)
-  np_y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
-  np_transformed = MDLP(shuffle=False).fit_transform(np_X, np_y)
-  assert_array_equal(expected, np_transformed)
+    np_X = np.arange(9).reshape(-1, 1)
+    np_y = np.array([0, 0, 0, 0, 1, 0, 1, 1, 1])
+    np_transformed = MDLP().fit_transform(np_X, np_y)
+    assert_array_equal(expected, np_transformed)
