@@ -10,7 +10,7 @@ for PYBIN in /opt/python/*/bin; do
         continue
     fi
     ${PYBIN}/pip install -r /code/dev-requirements.txt
-    ${PYBIN}/pip wheel /code/ -w wheelhouse/
+    ${PYBIN}/pip wheel /code/ -w --no-deps wheelhouse/
 done
 
 # Bundle external shared libraries into the wheels
