@@ -181,7 +181,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         output = X.copy()
         for i in self.continuous_features_:
             output[:, i] = np.searchsorted(self.cut_points_[i], X[:, i])
-        return output.astype(np.int)
+        return output.astype(self.dtype)
 
     def cat2intervals(self, X, index):
         """Converts categorical data into intervals.
