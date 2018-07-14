@@ -2,8 +2,6 @@
 set -e -x
 
 # Install a system package required by our library
-yum install -y gsl-devel
-
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     if [[ "$PYBIN" =~ (cp33|cp37) ]]; then
@@ -23,6 +21,6 @@ for PYBIN in /opt/python/*/bin/; do
     if [[ "$PYBIN" =~ (cp33|cp37) ]]; then
         continue
     fi
-    ${PYBIN}/pip install pysbrl --no-index -f /code/wheelhouse
+    ${PYBIN}/pip install mdlp-discretization --no-index -f /code/wheelhouse
     (cd /code; ${PYBIN}/python -m pytest)
 done
