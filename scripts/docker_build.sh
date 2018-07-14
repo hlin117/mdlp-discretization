@@ -6,7 +6,7 @@ set -e -x
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    if [ "$PYBIN" =~ cp33 ]; then
+    if [ "$PYBIN" =~ (cp33|cp37) ]; then
         continue
     fi
     ${PYBIN}/pip install -r /code/dev-requirements.txt
@@ -20,6 +20,9 @@ done
 
 # Install packages and test
 for PYBIN in /opt/python/*/bin/; do
+    if [ "$PYBIN" =~ (cp33|cp37) ]; then
+        continue
+    fi
     ${PYBIN}/pip install python-manylinux-demo --no-index -f /code/wheelhouse
     (cd $HOME; ${PYBIN}/nosetests pymanylinuxdemo)
 done
