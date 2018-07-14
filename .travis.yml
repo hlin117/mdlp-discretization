@@ -1,7 +1,30 @@
-language: python
-python:
-  - "2.7"
+
+notifications:
+  email: false
+
+deploy:
+  provider: pypi
+  user: $PYPI_USER
+  password: $PYPI_PASSWORD
+  skip_cleanup: true
+  on:
+    tags: true
+
+matrix:
+  include:
+    - sudo: required
+      services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - sudo: required
+      services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+           PRE_CMD=linux32
+
 install:
-  - pip install -e .
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull $DOCKER_IMAGE; fi
+
 script:
-  - py.test
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run --rm -v `pwd`:/code $DOCKER_IMAGE $PRE_CMD /code/scripts/docker_build.sh    ; fi
+  - ls wheelhouse/

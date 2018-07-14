@@ -43,18 +43,18 @@ if __name__ == '__main__':
 
     setup(
         name='mdlp-discretization',
-        version='0.3',
+        version='0.3.1',
         description=__doc__,
         license='BSD 3 Clause',
         url='github.com/hlin117/mdlp-discretization',
         author='Henry Lin',
         author_email='hlin117@gmail.com',
         install_requires=[
-            'setuptools>=18.0',
+            # 'setuptools>=18.0',
             'numpy>=1.11.2',
             'scipy>=0.18.1',
             'scikit-learn>=0.18.1',
-            'pytest>=3.2.2',
+            # 'pytest>=3.2.2',
         ],
         packages=find_packages(),
         ext_modules=[cpp_ext],
