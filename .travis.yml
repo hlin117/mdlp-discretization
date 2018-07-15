@@ -4,8 +4,8 @@ notifications:
 
 deploy:
   provider: pypi
-  user: $PYPI_USER
-  password: $PYPI_PASSWORD
+  user: "szmingyao"
+  password: "$PYPI_PASSWORD"
   distributions: "sdist bdist_wheel"
   skip_cleanup: true
   on:
@@ -33,7 +33,6 @@ matrix:
            PRE_CMD=linux32
 
 install:
-  - pip install twine
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull $DOCKER_IMAGE; fi
 
 script:
