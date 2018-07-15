@@ -8,12 +8,12 @@ for PYBIN in /opt/python/*/bin; do
         continue
     fi
     ${PYBIN}/pip install -r /code/dev-requirements.txt
-    ${PYBIN}/pip wheel /code/ --no-deps -w wheelhouse/
+    ${PYBIN}/pip wheel /code/ --no-deps -w dist/
 done
 
 # Bundle external shared libraries into the wheels
 for whl in wheelhouse/*.whl; do
-    auditwheel repair $whl -w /code/wheelhouse/
+    auditwheel repair $whl -w /code/dist/
 done
 
 # Install packages and test
@@ -21,6 +21,6 @@ for PYBIN in /opt/python/*/bin/; do
     if [[ "$PYBIN" =~ (cp33|cp37) ]]; then
         continue
     fi
-    ${PYBIN}/pip install mdlp-discretization --no-index -f /code/wheelhouse
+    ${PYBIN}/pip install mdlp-discretization --no-index -f /code/dist
     (cd /code; ${PYBIN}/python -m pytest)
 done

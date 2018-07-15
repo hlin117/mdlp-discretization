@@ -11,7 +11,16 @@ deploy:
   on:
     branch: production
 
+language: python
+# Default Python version is usually 2.7
+python: 3.5
+sudo: required
+dist: trusty
+services: docker
+
 matrix:
+  exlclude:
+    - python: 3.5
   include:
     - sudo: required
       services:
