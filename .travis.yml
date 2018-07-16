@@ -4,13 +4,19 @@ deploy:
   provider: pypi
   user: szmingyao
   password:
-    secure: lnjqFyeMjpiNrUPt8xiy/nshkV3X8//q3psTyqBxwqDLoblp3CJ7sCsCbjFkltSH3P5NW+8ZECMILsufRfJt+3LpFLrSAq6hjItZMwS+j2QHoQXQylawwryV+0lKvzFo1ZQ8e+9LyFQW+JjFb4daS3FfB44jNM5lhXE5a9ixDT/EOuVrwy/ulrA1dc1JaWyZXcWJYi1sKb+pYHgPoMGifG/Mb9V0C03LazIK3NinAI6S61E43XB34ljTfh2ERDewDhes1XefEIQuDSruG192fh10g42XoTuO1F2duilOIrhoMnx1LC+KfREywoLvjuA2w3vK+ugeMEXXyfcPZGtm9+0j/1MG2ORoCA6seEiovwEctXpKeUHKSPiriWX3plo3scyBRSnoR1Ngd+o/q5nkyphpRAqdaXwN51cMkpUt6O3x7MHGwUepaKkicM5VZcLtKUuYNob9NtpvSFaE2rPcsKXfGtQk753prWox0D7b+45ZEo+QIq3GbLV9p8/fCMZ/agtY3dOMLMgfWa3ENHxfwZTWqlHt0NWGRWQFpYlhQN7TyndprvTBmbF9mEOoj7e8RPcTsL8QtpAIbj0GfCLY6WuPneFpNjn9zp3TOihC9BTI7YhXAYB5YYhnmNWl5Dum0vax/MopjwGcekkQeZbd/L4WvhpkDWqqLKj9obzGHlw=
+    secure: J5NaBSEpSDiRyyP025/TdowUdt/XRLHw88vIPTdfcHzevIRWtVH8pmQlMer5PzwsutpiTwe3nGMeZZLirLUBMEO8YksLTpRF/IBrQkrGB/j8s8BQ32abgrcysifABLg0t8UyYbuNNM7zC8oxACmJ9kt44vo9l+GRMcgb5SaUoB9d3kOwPzNL0rbO8VHmOAbJIvRuDtMI9cOlKug0LbWlTqqexALjYJe+le9BGwt5vNWuZIZ6AgyF10tGptPnujlU2kyqTtFkEohQJqxDgnpZRbyx5m/Gj5hrKyrLnDdkjMmO4X6tTQ/d/AQyvOXt/c+RNfKZHh9T5Rw/evD3kThvmZYUF3zc+K2R2BJAQZfHjqeeHTkE8gMGpx+56isjUl7Jfdv0H6fwH1HSLWkBfhyCLqzKVz7+1nYrECKIWooJpLrWPueRXWp0J5tBOFPYjDjtDmjkLDpePyqsqnG7ffLF3kU7gAt0SwWOahIVrDW/KMPhv89HCuNKNNQVPZ8EM0XMDjqweOhX84dtSJ95zAgvHuzJcEfPmhScUfELjU0l5R7kVzsxS8MSheSW8kt71/B83d+ovoIT0vyQw9S/5YeRgKkUTfDeH2AjQ0YhtfU+wvjUGepWVcoWX2f/QARg9MoOvbgXT8JepV6z+OIpJPubsaxUB+gCP6iDZRyw8s/RvmY=
   distributions: sdist bdist_wheel
   skip_cleanup: true
   on:
     branch: production
-
+language: python
+python: 3.5
+sudo: required
+dist: trusty
+services: docker
 matrix:
+  exlclude:
+  - python: 3.5
   include:
   - sudo: required
     services:
