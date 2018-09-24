@@ -23,7 +23,7 @@ cdef inline void set_level(LEVEL level, SIZE_t start, SIZE_t end, SIZE_t depth):
 
 
 @cython.boundscheck(False)
-def MDLPDiscretize(col, y, int min_depth):
+def MDLPDiscretize(col, y, int min_depth, FLOAT min_split):
     """Performs MDLP discretization on X and y"""
 
     order = np.argsort(col)
@@ -34,6 +34,7 @@ def MDLPDiscretize(col, y, int min_depth):
 
     # Now we do a depth first search to create cut_points
     cdef int num_samples = len(col)
+    cdef int min_span = (int) (min_split * num_samples)
     cdef LEVEL init_level = <LEVEL> PyMem_Malloc(LEVEL_SIZE)
     cdef stdvector[LEVEL] search_intervals = stdvector[LEVEL]()
     set_level(init_level, 0, num_samples, 0)
@@ -45,7 +46,8 @@ def MDLPDiscretize(col, y, int min_depth):
         search_intervals.pop_back()
         start, end, depth = unwrap(currlevel)
         PyMem_Free(currlevel)
-
+        if end - start <= min_split:
+            break
         k = find_cut(y, start, end)
 
         # Need to see whether the "front" and "back" of the interval need

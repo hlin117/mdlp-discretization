@@ -19,12 +19,12 @@ from sklearn.utils.validation import check_is_fitted
 from mdlp._mdlp import MDLPDiscretize
 
 
-def normalize(cut_points, _range, precision):
-    # if len(cut_points) == 0:
-        # return cut_points
-    # _range = np.max(col) - np.min(col)
-    multiplier = 10**(-floor(log10(_range))) / precision
-    return (cut_points * multiplier).astype(np.int) / multiplier
+# def normalize(cut_points, _range, precision):
+#     # if len(cut_points) == 0:
+#         # return cut_points
+#     # _range = np.max(col) - np.min(col)
+#     multiplier = 10**(-floor(log10(_range))) / precision
+#     return (cut_points * multiplier).astype(np.int) / multiplier
 
 
 class MDLP(BaseEstimator, TransformerMixin):
@@ -55,8 +55,8 @@ class MDLP(BaseEstimator, TransformerMixin):
         outcome of MDLP if there are multiple samples with the same
         continuous value, but with different class labels.
 
-    precision : float (default=1e-4)
-        The precision of the cutting points
+    min_split : float (default=1e-3)
+        The minmum size to split a bin
 
     dtype : np.dtype (default=np.int)
         The dtype of the transformed X
@@ -102,12 +102,12 @@ class MDLP(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, continuous_features=None, min_depth=0, random_state=None, 
-                 precision=1e-4, dtype=np.int):
+                 min_split=1e-3, dtype=np.int):
         # Parameters
         # self.continuous_features = None
         self.min_depth = min_depth
         self.random_state = random_state
-        self.precision = precision
+        self.min_split = min_split
         self.continuous_features = continuous_features
         self.dtype = dtype
 
@@ -162,8 +162,9 @@ class MDLP(BaseEstimator, TransformerMixin):
 
         for index in self.continuous_features_:
             col = X[:, index]
-            cut_points = MDLPDiscretize(col, y, self.min_depth)
-            self.cut_points_[index] = normalize(cut_points, maxs[index] - mins[index], self.precision)
+            cut_points = MDLPDiscretize(col, y, self.min_depth, self.min_split)
+            self.cut_points_[index] = cut_points
+            # self.cut_points_[index] = normalize(cut_points, maxs[index] - mins[index], self.precision)
 
         self.mins_ = mins
         self.maxs_ = maxs
