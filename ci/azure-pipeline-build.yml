@@ -1,0 +1,84 @@
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+# Triggers can be overridden in the GUI. Suggested use follows:
+trigger:
+  branches:
+    include:
+      - master
+      - production
+
+# For a master-develop workflow:
+# pr:
+#   - master
+# trigger:
+#   - master
+
+
+
+# Either set these value here, or in the GUI
+variables:
+  package_name: mdlp-discretization
+  many_linux_base:  quay.io/pypa/manylinux1_
+
+jobs:
+
+- job: LinuxSDist
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    python.version: '3.5'
+    python.architecture: 'x64'
+  steps:
+    - template: azure-setup.yml
+    - script: |
+        python setup.py sdist
+      displayName: Setup sdist
+    - template: azure-publish-dist.yml
+
+- job: ManyLinux
+  strategy:
+    matrix:
+      64Bit2010:
+        arch: x86_64
+        plat: manylinux2010_x86_64
+        image: quay.io/pypa/manylinux2010_x86_64
+        python.architecture: x64
+      64Bit:
+        arch: x86_64
+        plat: manylinux1_x86_64
+        image: $(many_linux_base)x86_64
+        python.architecture: x64
+      32Bit:
+        arch: i686
+        plat: manylinux1_i686
+        image: $(many_linux_base)i686
+        pre_cmd: linux32
+        python.architecture: x86
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - template: azure-manylinux-wheels.yml
+    - template: azure-publish-dist.yml
+
+- job: macOS
+  variables:
+    python.architecture: 'x64'
+  strategy:
+    matrix:
+      Python27:
+        python.version: '2.7'
+      Python35:
+        python.version: '3.5'
+      Python36:
+        python.version: '3.6'
+      Python37:
+        python.version: '3.7'
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+    - template: azure-setup.yml
+    - template: azure-mac-steps.yml
+    - template: azure-publish-dist.yml

@@ -1,0 +1,22 @@
+# Copyright (c) 2019, Henry Schreiner.
+#
+# Distributed under the 3-clause BSD license, see accompanying file LICENSE
+# or https://github.com/scikit-hep/azure-wheel-helpers for details.
+
+# This is special for macOS because "UsePythonVersion"
+# does not use the official Python.org installers.
+
+steps:
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+    architecture: '$(python.architecture)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    mkdir -p dist
+    python -m pip install --upgrade pip
+    python -m pip install --upgrade wheel twine setuptools
+    python -m pip install -r dev-requirements.txt
+  displayName: 'Install dependencies'

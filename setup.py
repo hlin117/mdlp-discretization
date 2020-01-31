@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     setup(
         name='mdlp-discretization',
-        version='0.3.2',
+        version='0.3.3rc',
         description=__doc__,
         license='BSD 3 Clause',
         url='github.com/hlin117/mdlp-discretization',
@@ -55,6 +55,9 @@ if __name__ == '__main__':
             'scipy>=0.18.1',
             'scikit-learn>=0.18.1',
             # 'pytest>=3.2.2',
+        ],
+        setup_requires=[
+            'numpy>=1.11.2',
         ],
         packages=find_packages(),
         ext_modules=[cpp_ext],
