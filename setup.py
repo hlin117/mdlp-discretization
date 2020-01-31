@@ -50,11 +50,9 @@ if __name__ == '__main__':
         author='Henry Lin',
         author_email='hlin117@gmail.com',
         install_requires=[
-            # 'setuptools>=18.0',
             'numpy>=1.11.2',
             'scipy>=0.18.1',
             'scikit-learn>=0.18.1',
-            # 'pytest>=3.2.2',
         ],
         setup_requires=[
             'numpy>=1.11.2',
