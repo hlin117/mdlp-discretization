@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     setup(
         name='mdlp-discretization',
-        version='0.3.3rc',
+        version='0.3.3',
         description=__doc__,
         license='BSD 3 Clause',
         url='github.com/hlin117/mdlp-discretization',
