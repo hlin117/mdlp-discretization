@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Implements the MDLP discretization criterion from Usama Fayyad's paper
 "Multi-Interval Discretization of Continuous-Valued Attributes for
@@ -13,9 +13,11 @@ if __name__ == '__main__':
     try:
         # if Cython is available, we will rebuild from the pyx file directly
         from Cython.Distutils import build_ext
+        print("Using cython to build the extension")
         sources = ['mdlp/_mdlp.pyx']
     except:
         # else we build from the cpp file included in the distribution
+        print("Cannot find available cython installation. Using cpp to build the extension")
         from setuptools.command.build_ext import build_ext
         sources = ['mdlp/_mdlp.cpp']
 
@@ -57,7 +59,7 @@ if __name__ == '__main__':
         setup_requires=[
             'numpy>=1.11.2',
         ],
-        packages=find_packages(),
+        packages=['mdlp'],
         ext_modules=[cpp_ext],
         cmdclass={'build_ext': CustomBuildExt},
     )

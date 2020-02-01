@@ -20,7 +20,7 @@ trigger:
 
 # Either set these value here, or in the GUI
 variables:
-  package_name: mdlp-discretization
+  package_name: mdlp_discretization
   many_linux_base:  quay.io/pypa/manylinux1_
 
 jobs:
