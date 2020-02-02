@@ -1,11 +1,19 @@
 steps:
 
 - script: |
+    python -m pip wheel . -w wheelhouse/
     python setup.py bdist_wheel
   displayName: 'Build'
 - script: |
-    python setup.py install
-  displayName: 'Install'
+    ls -lh wheelhouse
+    mkdir -p dist
+    cp wheelhouse/mdlp_discretization* dist/.
+  displayName: 'Show wheelhouse'
+
+- script: |
+    python -m pip install $(package_name) --no-index -f wheelhouse
+  displayName: 'Install wheel'
+
 - script: |
     pip install pytest pytest-azurepipelines
     pytest
