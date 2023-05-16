@@ -104,7 +104,7 @@ class MDLP(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, continuous_features=None, min_depth=0, random_state=None, 
-                 min_split=1e-3, dtype=int):
+                 min_split=1e-3, dtype=np.int):
         # Parameters
         # self.continuous_features = None
         self.min_depth = min_depth
