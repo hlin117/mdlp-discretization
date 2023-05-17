@@ -26,7 +26,7 @@ from mdlp._mdlp import MDLPDiscretize
 #         # return cut_points
 #     # _range = np.max(col) - np.min(col)
 #     multiplier = 10**(-floor(log10(_range))) / precision
-#     return (cut_points * multiplier).astype(np.int) / multiplier
+#     return (cut_points * multiplier).astype(int) / multiplier
 
 
 class MDLP(BaseEstimator, TransformerMixin):
@@ -60,7 +60,7 @@ class MDLP(BaseEstimator, TransformerMixin):
     min_split : float (default=1e-3)
         The minmum size to split a bin
 
-    dtype : np.dtype (default=np.int)
+    dtype : np.dtype (default=int)
         The dtype of the transformed X
 
     Attributes
@@ -104,7 +104,7 @@ class MDLP(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, continuous_features=None, min_depth=0, random_state=None, 
-                 min_split=1e-3, dtype=np.int):
+                 min_split=1e-3, dtype=int):
         # Parameters
         # self.continuous_features = None
         self.min_depth = min_depth
@@ -135,7 +135,7 @@ class MDLP(BaseEstimator, TransformerMixin):
         """
         X = check_array(X, force_all_finite=True, ensure_2d=True, dtype=np.float64)
         y = column_or_1d(y)
-        y = check_array(y, ensure_2d=False, dtype=np.int)
+        y = check_array(y, ensure_2d=False, dtype=int)
         X, y = check_X_y(X, y)
 
         if len(X.shape) != 2:
@@ -154,7 +154,7 @@ class MDLP(BaseEstimator, TransformerMixin):
             if continuous_features.dtype == np.bool:
                 continuous_features = np.arange(len(continuous_features))[continuous_features]
             else:
-                continuous_features = continuous_features.astype(np.int, casting='safe')
+                continuous_features = continuous_features.astype(int, casting='safe')
                 assert np.max(continuous_features) < X.shape[1] and np.min(continuous_features) >= 0
             self.continuous_features_ = continuous_features
 
